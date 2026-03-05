@@ -1,0 +1,18 @@
+venv/
+__pycache__/
+*.pyc
+.idea/
+.vscode/
+install_log.txt
+shap_out.txt
+data/
+
+# Environment files
+.env
+
+# Streamlit config (optional)
+# .streamlit/
+
+# temporary files
+*.temp
+*.tmp
