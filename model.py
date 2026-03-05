@@ -17,11 +17,10 @@ class HybridFraudDetector:
             self.scaler = joblib.load(os.path.join(self.models_dir, 'scaler.pkl'))
             self.rf_model = joblib.load(os.path.join(self.models_dir, 'random_forest.pkl'))
             self.iso_model = joblib.load(os.path.join(self.models_dir, 'isolation_forest.pkl'))
-            self.autoencoder = tf.keras.models.load_model(os.path.join(self.models_dir, 'autoencoder.keras'))
+            self.autoencoder = tf.keras.models.load_model(os.path.join(self.models_dir, 'autoencoder.keras'), compile=False)
             print("All models loaded successfully.")
         except Exception as e:
-            print(f"Error loading models: {e}")
-            print("Please ensure you have run 'python train.py' first.")
+            raise RuntimeError(f"Error loading models: {e}. Please ensure models exist and aren't corrupted.")
 
     def get_autoencoder_reconstruction_error(self, X_scaled):
         reconstructions = self.autoencoder.predict(X_scaled)
