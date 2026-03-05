@@ -23,11 +23,14 @@ class HybridFraudDetector:
             raise RuntimeError(f"Error loading models: {e}. Please ensure models exist and aren't corrupted.")
 
     def get_autoencoder_reconstruction_error(self, X_scaled):
-        X_input = np.array(X_scaled, dtype=np.float64)
-        reconstructions = self.autoencoder.predict(X_input, verbose=0)
-        reconstructions = np.array(reconstructions, dtype=np.float64).reshape(X_input.shape)
-        mse = np.mean(np.power(X_input - reconstructions, 2), axis=1)
-        return mse
+        try:
+            X_input = np.array(X_scaled, dtype=np.float32)
+            reconstructions = self.autoencoder(tf.constant(X_input), training=False)
+            reconstructions = np.array(reconstructions, dtype=np.float32).reshape(X_input.shape)
+            mse = np.mean(np.power(X_input - reconstructions, 2), axis=1)
+            return mse
+        except Exception as e:
+            raise RuntimeError(f"Autoencoder inference failed: {type(e).__name__}: {e}")
 
     def predict(self, X):
         """
