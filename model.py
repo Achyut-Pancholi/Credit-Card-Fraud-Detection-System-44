@@ -12,12 +12,24 @@ class HybridFraudDetector:
         self.scaler = None
         self.load_models()
 
+    def _build_autoencoder(self, input_dim=30):
+        """Rebuild the autoencoder architecture (must match train.py exactly)."""
+        input_layer = tf.keras.layers.Input(shape=(input_dim,))
+        encoder = tf.keras.layers.Dense(32, activation="relu")(input_layer)
+        encoder = tf.keras.layers.Dense(16, activation="relu")(encoder)
+        encoder = tf.keras.layers.Dense(8, activation="relu")(encoder)
+        decoder = tf.keras.layers.Dense(16, activation="relu")(encoder)
+        decoder = tf.keras.layers.Dense(32, activation="relu")(decoder)
+        decoder = tf.keras.layers.Dense(input_dim, activation="linear")(decoder)
+        return tf.keras.models.Model(inputs=input_layer, outputs=decoder)
+
     def load_models(self):
         try:
             self.scaler = joblib.load(os.path.join(self.models_dir, 'scaler.pkl'))
             self.rf_model = joblib.load(os.path.join(self.models_dir, 'random_forest.pkl'))
             self.iso_model = joblib.load(os.path.join(self.models_dir, 'isolation_forest.pkl'))
-            self.autoencoder = tf.keras.models.load_model(os.path.join(self.models_dir, 'autoencoder.h5'), compile=False)
+            self.autoencoder = self._build_autoencoder()
+            self.autoencoder.load_weights(os.path.join(self.models_dir, 'autoencoder_weights.weights.h5'))
             print("All models loaded successfully.")
         except Exception as e:
             raise RuntimeError(f"Error loading models: {e}. Please ensure models exist and aren't corrupted.")

@@ -31,7 +31,7 @@ def main():
     st.title("🛡️ Hybrid Credit Card Fraud Detection")
     
     # Check if models are trained
-    if not os.path.exists('models/autoencoder.h5'):
+    if not os.path.exists('models/autoencoder_weights.weights.h5'):
         st.warning("Models not found! Please run the training script first (`python train.py`).")
         st.stop()
     
