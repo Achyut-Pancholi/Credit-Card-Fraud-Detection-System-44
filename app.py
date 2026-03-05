@@ -34,8 +34,21 @@ def main():
     if not os.path.exists('models/autoencoder.keras'):
         st.warning("Models not found! Please run the training script first (`python train.py`).")
         st.stop()
-        
-    detector = load_detector()
+    
+    # Diagnostics sidebar
+    with st.sidebar.expander("🔧 Debug Info"):
+        import tensorflow as tf
+        import sklearn
+        st.text(f"TF: {tf.__version__}")
+        st.text(f"Keras: {tf.keras.__version__}")
+        st.text(f"NumPy: {np.__version__}")
+        st.text(f"Sklearn: {sklearn.__version__}")
+    
+    try:
+        detector = load_detector()
+    except Exception as e:
+        st.error(f"Failed to load models: {type(e).__name__}: {e}")
+        st.stop()
     
     # Sidebar navigation
     st.sidebar.title("Navigation")
